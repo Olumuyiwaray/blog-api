@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // Import libraries
-import express, {Application} from 'express';
+import express, { Application, Request, Response, NextFunction } from 'express';
 import session from 'express-session';
 import methodOveride from 'method-override';
 import cors from 'cors';
@@ -17,6 +17,8 @@ const port = process.env.PORT || 3000;
 // Import in app config middlewares
 import limiter from './config/limiter';
 import sessionOptions from './config/express-session';
+import routes from './routes/routes';
+import { errorMiddleWare, requestLoggerMiddleware, responseLogger } from './utils/middlewares';
 
 
 // Connect database
@@ -44,3 +46,16 @@ app.use(compression());
 app.use(session(sessionOptions));
 
 
+app.use(requestLoggerMiddleware);
+app.use(responseLogger);
+
+app.use(routes);
+
+// handle 404 Not found Requests 
+app.use((req: Request, res: Response, next: NextFunction) => {
+    const err = new Error('Not Found');
+    res.status(404).json({ message: 'Not Found' });
+  });
+
+
+app.use(errorMiddleWare);
