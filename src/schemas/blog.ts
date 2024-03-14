@@ -19,4 +19,4 @@ const BlogSchema = new Schema<Blog>({
 
 const BlogModel = model('Blog', BlogSchema);
 
-export {BlogModel};
+export { BlogModel, Blog };

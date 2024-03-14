@@ -1,8 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
 import logger from '../config/logger';
 import { inspect } from 'util';
+import jwt, { JwtPayload } from 'jsonwebtoken';
+import { iGetUser, jwtPayLoad } from '..';
 
 
+
+// Create middleware to log and handle errors
 export const errorMiddleWare = (err: Error, req: Request, res: Response, next: NextFunction) => {
 
     logger.error(`${err.name || 500} - ${err.message} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
@@ -53,9 +57,29 @@ export const requestLoggerMiddleware = (
   next();
 };
 
+// Create response middleware to log response
 export const responseLogger = (req: Request, res: Response, next: NextFunction) => {
   // Store original res.send to log the response status
   const { sendStatus, status, statusCode, statusMessage} = res;
   logger.info(`${statusCode}`);
   next();
 } 
+
+
+export const AuthMiddleware = (req: iGetUser, res: Response, next: NextFunction) => {
+  const token = req.cookies.token;
+  const jwtSecret = process.env.JWT_SECRET!;
+
+  if(!token) {
+    return res.status(401).json( { message: 'Unauthorized'} );
+  }
+
+  try {
+    const decoded = jwt.verify(token, jwtSecret) as jwtPayLoad;
+    req.userId = decoded.uID;
+    console.log(req.userId);
+    next();
+  } catch(error) {
+    res.status(401).json( { message: 'Unauthorized'} );
+  }
+}
