@@ -1,46 +1,49 @@
 import { Request, Response, NextFunction } from 'express';
-import { getAllBlogs, getBlogSearch, getSingleBlog } from '../services/blog.service';
+import {
+  getAllBlogs,
+  getBlogSearch,
+  getSingleBlog,
+} from '../services/blog.service';
 
+export const getPosts = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const blogs = await getAllBlogs();
 
-export const getPosts = async (req: Request, res: Response, next: NextFunction) => {
+    res.status(200).send(blogs);
+  } catch (error: any) {
+    next(error);
+  }
+};
 
-    try {
-        const blogs = await getAllBlogs();
+export const getPost = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const id = req.params.id;
+  try {
+    const blog = await getSingleBlog(id);
+    res.status(200).send(blog);
+  } catch (error: any) {
+    next(error);
+  }
+};
 
-        res.send(blogs);
+export const searchPosts = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const searchTerm = req.query.search;
 
-    } catch (error: any) {
-        res.json({
-            message: error.message
-       })
-    }
-}
-
-
-export const getPost = async (req: Request, res: Response, next: NextFunction) => {
-
-    const id = req.params.id;
-    try {
-        const blog = await getSingleBlog(id);
-        res.send(blog);
-    } catch (error: any) {
-        res.json({
-            message: error.message
-       }) 
-    }
-}
-
-
-export const searchPosts = async (req: Request, res: Response, next: NextFunction) => {
-
-    const searchTerm = req.query.search;
-
-    try {
-        const searchResults = getBlogSearch(searchTerm);
-        res.send(searchResults);
-    } catch (error: any) {
-        res.json({
-            message: error.message
-       })
-    }
-}
+  try {
+    const searchResults = getBlogSearch(searchTerm);
+    res.status(200).send(searchResults);
+  } catch (error: any) {
+    next(error);
+  }
+};
