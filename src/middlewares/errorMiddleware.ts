@@ -1,10 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
 import logger from '../config/logger';
-import {
-  DatabaseError,
-  DuplicateError,
-  NotFoundError,
-} from '../utils/CustomError';
 import { Error } from 'mongoose';
 
 // Create middleware to log and handle errors
