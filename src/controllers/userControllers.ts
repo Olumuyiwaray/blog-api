@@ -1,17 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 
-import { genSalt, hashPassword } from '../utils/password';
-import {
-  createPost,
-  createUser,
-  deleteBlogPost,
-  editBlogPost,
-  loginUser,
-} from '../services/user.service';
-import { getSingleBlog } from '../services/blog.service';
-import { UserModel } from '../models/User';
+import { comparePassword, genSalt, hashPassword } from '../utils/password';
+
+import { User, UserModel } from '../models/User';
 import mongoose from 'mongoose';
+import { BlogModel } from '../models/Blog';
 
 export const register = async (
   req: Request,
@@ -21,17 +15,23 @@ export const register = async (
   const { username, name, password } = req.body;
 
   try {
-    // generate hash salt and create password hash
-    const salt = await genSalt();
-    const hash = await hashPassword(password, salt);
+    // Check if username already exists in database
+    const userCheck = await UserModel.findOne({ username });
 
-    await createUser(username, name, hash, salt);
+    // if username exists send back response to client
+    if (userCheck) {
+      res.send('username already in use');
+    } else {
+      // if username does not exist in database generate hash salt and create password hash
+      const salt: string = await genSalt();
+      const hash: string = await hashPassword(password, salt);
 
-    res.status(200).send('Registration successfull');
+      const newUser = await UserModel.create({ username, name, password: hash, salt });
+
+      res.status(201).send('Registration successfull');
+    }
   } catch (error: any) {
-    res.json({
-      message: error.message,
-    });
+    next(error);
   }
 };
 
@@ -44,18 +44,36 @@ export const logIn = async (
   const jwtSecret = process.env.JWT_SECRET!;
 
   try {
-    const user = await loginUser(username, password);
+    const user = await UserModel.findOne({ username });
 
-    const token = jwt.sign(
-      { uID: user._id, username: user.username },
-      jwtSecret
-    );
-    res.cookie('token', token, { httpOnly: true });
-    res.status(200).send(`Login successfull, ${user}`);
-  } catch (error: any) {
-    res.json({
-      message: error.message,
-    });
+    // Check that query did not return a null value
+    if (user !== null) {
+      // check password validity
+      const isPassword = await comparePassword(
+        password,
+        user.password,
+        user.salt
+      );
+
+      // if Password is not valid send a response to the client
+      if (!isPassword) {
+        res.send('invalid username or password');
+      }
+
+      // if password is valid create jwt token
+      const token = jwt.sign(
+        { uID: user._id, username: user.username },
+        jwtSecret
+      );
+
+      // token  to a cookie and send response to client
+      res.cookie('token', token, { httpOnly: true });
+      res.status(200).send(`Login successfull, ${user.username}`);
+    } else {
+      res.send('Invalid username or password');
+    }
+  } catch (error) {
+    next(error);
   }
 };
 
@@ -68,13 +86,11 @@ export const addPost = async (
   const author: string = req.user.userId;
 
   try {
-    await createPost(title, snippet, body, author);
+    const newBlog = await BlogModel.create({ title, snippet, body, author });
 
     res.status(200).send('Post added');
-  } catch (error: any) {
-    res.json({
-      message: error.message,
-    });
+  } catch (error) {
+    next(error);
   }
 };
 
@@ -88,19 +104,19 @@ export const editPost = async (
   const id = req.params.id;
 
   try {
-    const post = await getSingleBlog(id);
+    const post = await BlogModel.findById(id);
 
-    if (!post.author.equals(req.user.userId)) {
+    if (post === null) {
+      res.send('unable to find post');
+    } else if (!post.author.equals(req.user.userId)) {
       res.send('Unauthorized operation');
     } else {
-      await editBlogPost(id, content);
+      await BlogModel.findByIdAndUpdate(id, content, { new: true });
 
       res.status(200).send('Post updated successfully');
     }
-  } catch (error: any) {
-    res.json({
-      message: error.message,
-    });
+  } catch (error) {
+    next(error)
   }
 };
 
@@ -114,30 +130,31 @@ export const deletePost = async (
   const postId = new mongoose.Types.ObjectId(id);
 
   try {
-    const post = await getSingleBlog(id);
+    const post = await BlogModel.findById(id);
 
-    if (!post.author.equals(req.user.userId)) {
+    if (post === null) {
+      res.send('unable to complete operation');
+    } else if (!post.author.equals(req.user.userId)) {
       res.send('Unauthorized operation');
     } else {
-      const deleted = await deleteBlogPost(id);
+      const deleted = await BlogModel.findByIdAndDelete(id);
+      if (deleted !== null) {
+        const user = await UserModel.findById(deleted.author);
 
-    const user = await UserModel.findById(deleted.author);
+        if (user) {
+          // Remove the post ID from the user's posts array
+          const postIndex = user.posts.indexOf(postId);
+          if (postIndex !== -1) {
+            user.posts.splice(postIndex, 1);
+            await user.save(); // Save the updated user document
+          }
+        }
 
-    if (user) {
-      // Remove the post ID from the user's posts array
-      const postIndex = user.posts.indexOf(postId);
-      if (postIndex !== -1) {
-        user.posts.splice(postIndex, 1);
-        await user.save(); // Save the updated user document
+        res.status(200).send('Post successfully deleted');
       }
     }
-
-    res.status(200).send('Post successfully deleted');
-    }
-  } catch (error: any) {
-    res.json({
-      message: error.message,
-    });
+  } catch (error) {
+    next(error);
   }
 };
 
