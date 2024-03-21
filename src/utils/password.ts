@@ -17,13 +17,17 @@ export const hashPassword = async (
   salt: string
 ): Promise<string> => {
   return new Promise((resolve, reject) => {
-    crypto.pbkdf2(password, salt, 10000, 64, 'sha512', (err, derivedKey) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(derivedKey.toString('hex'));
-      }
-    });
+    if (password.trim() === '' || salt.trim() === '') {
+      reject(new Error('Password and salt must not be empty.'));
+    } else {
+      crypto.pbkdf2(password, salt, 10000, 64, 'sha512', (err, derivedKey) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(derivedKey.toString('hex'));
+        }
+      });
+    }
   });
 };
 
@@ -32,6 +36,19 @@ export const comparePassword = async (
   hashedPassword: string,
   salt: string
 ): Promise<boolean> => {
+  if (password.trim() === '' || salt.trim() === '') {
+    throw new Error('Password and salt must not be empty.');
+  }
+
+  if (!hashedPassword) {
+    throw new Error('Hashed password must not be empty.');
+  }
+
   const hashedInputPassword = await hashPassword(password, salt);
+
+  if (!hashedInputPassword) {
+    throw new Error('Error hashing the password.');
+  }
+
   return hashedInputPassword === hashedPassword;
 };

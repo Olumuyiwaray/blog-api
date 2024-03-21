@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
 import logger from '../config/logger';
-import { Error } from 'mongoose';
 
 // Create middleware to log and handle errors
 const errorMiddleWare = (

@@ -57,12 +57,8 @@ app.use(routes);
 
 // handle 404 Not found Requests
 app.use((req: Request, res: Response, next: NextFunction) => {
-  const err = new Error('Not Found');
-  res.status(404).json({ message: 'Not Found' });
+  const err = new Error(`path ${req.originalUrl} not found`);
+  res.status(404).json({ message: err.message });
 });
 
 app.use(errorMiddleWare);
-
-/*app.listen(port, () => {
-  console.log(`listening for requests`);
-})*/

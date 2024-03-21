@@ -12,7 +12,9 @@ export const register = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { username, name, password } = req.body;
+  const userDTO = { ...req.body };
+
+  const { username, name, password } = userDTO;
 
   try {
     // Check if username already exists in database
@@ -26,7 +28,12 @@ export const register = async (
       const salt: string = await genSalt();
       const hash: string = await hashPassword(password, salt);
 
-      const newUser = await UserModel.create({ username, name, password: hash, salt });
+      const newUser = await UserModel.create({
+        username,
+        name,
+        password: hash,
+        salt,
+      });
 
       res.status(201).send('Registration successfull');
     }
@@ -40,7 +47,8 @@ export const logIn = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { username, password } = req.body;
+  const userDTO = { ...req.body };
+  const { username, password } = userDTO;
   const jwtSecret = process.env.JWT_SECRET!;
 
   try {
@@ -77,12 +85,27 @@ export const logIn = async (
   }
 };
 
+export const getUSer = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+
+  const id = req.params.id;
+  try {
+    const user = UserModel.findById(id);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const addPost = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  const { title, snippet, body } = req.body;
+  const blogDTO = { ...req.body };
+  const { title, snippet, body } = blogDTO;
   const author: string = req.user.userId;
 
   try {
@@ -116,7 +139,7 @@ export const editPost = async (
       res.status(200).send('Post updated successfully');
     }
   } catch (error) {
-    next(error)
+    next(error);
   }
 };
 
