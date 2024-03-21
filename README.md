@@ -67,6 +67,7 @@ npm start
 
 ## Project Structure
 
+```
 📦 Blog-api/
 │
 ├── 📂dist/
@@ -74,14 +75,14 @@ npm start
 ├── 📂node_modules/
 │
 ├── 📂src/
-│ ├── 📂config/
-│ ├── 📂controllers/
-│ ├── 📂middlewares/
-│ ├── 📂models/
-│ ├── 📂routes/
-│ ├── 📂utils/
-│ ├── 📄app.ts
-│ └── 📄global.d.ts
+│   ├── 📂config/
+│   ├── 📂controllers/
+│   ├── 📂middlewares/
+│   ├── 📂models/
+│   ├── 📂routes/
+│   ├── 📂utils/
+│   ├── 📄app.ts
+│   └── 📄global.d.ts
 │
 │
 │
@@ -91,6 +92,7 @@ npm start
 ├── 📄package.json
 ├── 📄README.md
 └── 📄tsconfig.json
+```
 
 ## Configuration
 
