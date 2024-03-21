@@ -68,29 +68,30 @@ npm start
 ## Project Structure
 
 ```
-Blog-api/
+📦 Blog-api/
 │
-├── dist/
+├── 📂dist/
 │
-├── node_modules/
+├── 📂node_modules/
 │
-├── src/
-│   ├── config/
-│   ├── controllers/
-│   ├── middlewares/
-│   ├── models/
-│   ├── routes/
-│   ├── utils/
-│   ├── app.ts
-│   └── global.d.ts
+├── 📂src/
+│   ├── 📂config/
+│   ├── 📂controllers/
+│   ├── 📂middlewares/
+│   ├── 📂models/
+│   ├── 📂routes/
+│   ├── 📂utils/
+│   ├── 📄app.ts
+│   └── 📄global.d.ts
 │
 │
 │
-├── License
-├── .env
-├── package.json
-├── tsconfig.json
-└── README.md
+├── 📄License
+├── 📄.env
+├── 📄package-lock.json
+├── 📄package.json
+├── 📄README.md
+└── 📄tsconfig.json
 ```
 
 ## Configuration
