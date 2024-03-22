@@ -96,7 +96,7 @@ npm start
 
 ## Configuration
 
-- Modify src/config/config.ts for for app specific configurations.
+- Modify src/config/config.ts for app specific configurations.
 
 - Update database credentials and other settings in the .env file.
 
