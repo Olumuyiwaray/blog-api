@@ -16,7 +16,7 @@ export const checkPermission = async (
     const blogId = req.params.blogId;
     const authorId = req.user.userId;
 
-    const blog = await Blog.findById(blogId);
+    const blog = await Blog.findById({ _id: { $eq: blogId } });
 
     if (!blog) {
       return res.json({ message: 'unable to complete operation' });

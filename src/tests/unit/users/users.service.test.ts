@@ -250,7 +250,9 @@ describe('login service', () => {
 
     const result = await userService.loginUser(payload);
 
-    expect(User.findOne).toHaveBeenCalledWith({ email: payload.email });
+    expect(User.findOne).toHaveBeenCalledWith({
+      email: { $eq: payload.email },
+    });
     expect(comparePassword).toHaveBeenCalled();
     expect(jwt.sign).toHaveBeenCalled();
     expect(result).toEqual({ token: 'mockToken', user: mockUser });
@@ -272,7 +274,9 @@ describe('login service', () => {
     await expect(userService.loginUser(payload)).rejects.toThrow(
       'Invalid username or password'
     );
-    expect(User.findOne).toHaveBeenCalledWith({ email: payload.email });
+    expect(User.findOne).toHaveBeenCalledWith({
+      email: { $eq: payload.email },
+    });
     expect(comparePassword).not.toHaveBeenCalled();
     expect(hashPassword).not.toHaveBeenCalled();
     expect(jwt.sign).not.toHaveBeenCalled();
@@ -309,7 +313,9 @@ describe('login service', () => {
     await expect(userService.loginUser(payload)).rejects.toThrow(
       'Invalid username or password'
     );
-    expect(User.findOne).toHaveBeenCalledWith({ email: payload.email });
+    expect(User.findOne).toHaveBeenCalledWith({
+      email: { $eq: payload.email },
+    });
     expect(comparePassword).toHaveBeenCalled();
     expect(jwt.sign).not.toHaveBeenCalled();
   });
@@ -392,7 +398,9 @@ describe('send password reset link service', () => {
 
     const result = await userService.sendPasswordResetLink(email, req);
 
-    expect(User.findOne).toHaveBeenCalledWith({ email: 'useremail@gmail.com' });
+    expect(User.findOne).toHaveBeenCalledWith({
+      email: { $eq: email },
+    });
     expect(typeof result).toBe('string');
   });
 
@@ -425,7 +433,7 @@ describe('send password reset link service', () => {
     await expect(userService.sendPasswordResetLink(email, req)).rejects.toThrow(
       'User does not exist'
     );
-    expect(User.findOne).toHaveBeenCalledWith({ email });
+    expect(User.findOne).toHaveBeenCalledWith({ email: { $eq: email } });
     expect(generateToken).not.toHaveBeenCalled();
     expect(constructEmail).not.toHaveBeenCalled();
     expect(mockUser.save).not.toHaveBeenCalled();

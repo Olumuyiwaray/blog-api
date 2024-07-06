@@ -17,13 +17,13 @@ import { sendEmail } from '../utils/email';
 export const registerUser = async (payload: IRegister, req: Request) => {
   const { name, username, email, password, profile_image } = payload;
 
-  const checkEmail = await User.findOne({ email });
+  const checkEmail = await User.findOne({ email: { $eq: email } });
 
   if (checkEmail) {
     throw new ConflictError('Email already in use');
   }
 
-  const checkUsername = await User.findOne({ username });
+  const checkUsername = await User.findOne({ username: { $eq: username } });
 
   if (checkUsername) {
     throw new ConflictError('username has been chosen');
@@ -82,7 +82,7 @@ export const verifyUserRegisterationEmail = async (token: string) => {
 export const loginUser = async (payload: ILogin) => {
   const { email, password } = payload;
 
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email: { $eq: email } });
 
   const jwtSecret = enviromentConfig.jwtSecret;
 
@@ -119,7 +119,7 @@ export const getUserAccount = async (id: string) => {
 };
 
 export const sendPasswordResetLink = async (email: string, req: Request) => {
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email: { $eq: email } });
 
   if (!user) {
     throw new NotFoundError('User does not exist');

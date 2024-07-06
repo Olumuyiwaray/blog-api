@@ -382,7 +382,7 @@ describe('edit blog comment service', () => {
 
     expect(Comment.findByIdAndUpdate).toHaveBeenCalledWith(
       commentId,
-      newComment,
+      { content: { $eq: newComment } },
       { new: true }
     );
     expect(typeof result).toBe('string');

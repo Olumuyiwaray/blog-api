@@ -114,9 +114,13 @@ export const addBlogComment = async (
 };
 
 export const editBlogComment = async (commentId: string, content: any) => {
-  const updatedComment = await Comment.findByIdAndUpdate(commentId, content, {
-    new: true,
-  });
+  const updatedComment = await Comment.findByIdAndUpdate(
+    commentId,
+    { content: { $eq: content } },
+    {
+      new: true,
+    }
+  );
 
   if (!updatedComment) {
     throw new Error('Unable to edit comment try again later');
