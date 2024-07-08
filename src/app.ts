@@ -19,7 +19,6 @@ import routes from './routes/routes';
 import errorMiddleWare from './middlewares/errorMiddleware';
 import loggerMiddleware from './middlewares/loggerMiddleware';
 
-
 const app = express();
 const port = enviromentConfig.port;
 

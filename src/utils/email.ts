@@ -1,3 +1,4 @@
+import { enviromentConfig } from '../config/envConfig';
 import transporter from '../config/nodemailer';
 
 export const sendEmail = async (emailData: {
@@ -6,10 +7,10 @@ export const sendEmail = async (emailData: {
   body: string;
 }) => {
   const mailOptions = {
-    from: '"Example Team" <no-reply@example.com>',
+    from: enviromentConfig.nodemailerEmail,
     to: emailData.to,
     subject: emailData.subject,
-    text: emailData.body,
+    html: emailData.body,
   };
 
   await transporter.sendMail(mailOptions);

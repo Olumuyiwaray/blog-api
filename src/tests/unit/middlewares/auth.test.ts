@@ -15,7 +15,7 @@ jest.mock('../../../config/envConfig', () => ({
 }));
 
 describe('auth middleware testing', () => {
-  // sets req.user with decoded payload when token is valid
+  
   it('should set req.user with decoded payload when token is valid', () => {
     let req = {} as Request;
     req.headers = {

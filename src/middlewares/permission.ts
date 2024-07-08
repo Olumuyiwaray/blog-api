@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
 import { Blog } from '../models/Blog';
-import mongoose from 'mongoose';
 
 /**
  * 
@@ -19,13 +18,12 @@ export const checkPermission = async (
     const blog = await Blog.findById({ _id: { $eq: blogId } });
 
     if (!blog) {
-      return res.json({ message: 'unable to complete operation' });
+      return res.status(404).json({ message: 'blog not found' });
     }
 
     if (!blog.author.equals(authorId)) {
-      return res.json({ message: 'Unauthorized operation' });
+      return res.status(401).json({ message: 'Unauthorized operation' });
     }
-
     next();
   } catch (error) {
     next(error);

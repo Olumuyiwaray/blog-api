@@ -10,6 +10,7 @@ const transporter = nodemailer.createTransport({
     user: enviromentConfig.nodemailerEmail,
     pass: enviromentConfig.nodemailerPassword,
   },
+  authMethod: 'PLAIN',
 });
 
 export default transporter;

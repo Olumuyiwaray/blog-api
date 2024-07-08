@@ -48,12 +48,14 @@ export const registerUser = async (payload: IRegister, req: Request) => {
     verificationExpires,
   });
 
-  const verificationLink = `${req.protocol}://${req.hostname}:3000/verify/${verificationToken}`;
+  const verificationLink = `${req.protocol}://${req.hostname}:3000/users/verify/${verificationToken}`;
   const to = newUser.email;
-  const subject = '';
+  const subject = 'verify your email address';
+  const label = 'Verify Email';
   const body = constructEmail(
     'Please click on the button below to verify your email',
-    verificationLink
+    verificationLink,
+    label
   );
 
   addJobToQueue({ to, subject, body });
@@ -126,10 +128,15 @@ export const sendPasswordResetLink = async (email: string, req: Request) => {
   }
 
   const token = generateToken();
-  const verificationLink = `${req.protocol}://${req.hostname}:3000/verify/${token}`;
+  const verificationLink = `${req.protocol}://${req.hostname}:3000/users/verify/${token}`;
   const to = user.email;
-  const subject = '';
-  const body = constructEmail('Please click on the button ', verificationLink);
+  const subject = 'reset your password';
+  const label = 'Reset password';
+  const body = constructEmail(
+    'Please click on the button to reset your password',
+    verificationLink,
+    label
+  );
   await sendEmail({ to, subject, body });
   user.resetPasswordToken = token;
   user.resetPasswordExpires = new Date(Date.now() + 3600000);

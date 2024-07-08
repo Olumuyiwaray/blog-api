@@ -1,4 +1,3 @@
-
 import { emailQueue } from '../config/queue';
 import crypto from 'crypto';
 
@@ -10,8 +9,6 @@ export const getEnvVariable = (key: string) => {
   return process.env[key] as string;
 };
 
-
-
 export const addJobToQueue = (emailData: {
   to: string;
   subject: string;
@@ -21,7 +18,7 @@ export const addJobToQueue = (emailData: {
     attempts: 3, // Retry 3 times if the job fails
     backoff: {
       type: 'fixed',
-      delay: 5000, // Wait 5 seconds before retrying
+      delay: 10000, // Wait 5 seconds before retrying
     },
   });
 };
@@ -33,13 +30,17 @@ export const generateToken = () => {
     .slice(0, 20);
 };
 
-export const constructEmail = (message: string, verificationLink: string) => {
+export const constructEmail = (
+  message: string,
+  verificationLink: string,
+  label: string
+) => {
   return `<h3>${message}</h3>
     <a style="background-color: blue;
      text-align: center; color: white;
       text-decoration: none; padding:
        5px; border: none; border-radius: 3px;"
         href=${verificationLink}>
-         Reset Password
+         ${label}
          </a>`;
 };

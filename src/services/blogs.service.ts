@@ -69,14 +69,16 @@ export const toggleBlogLike = async (blogId: string, userId: any) => {
     throw new NotFoundError('blog not found');
   }
 
+  const userIndex = blog.likes.indexOf(userId);
+
   /**
    * if the post is already liked remove the like, else like post
    */
 
-  if (!blog.likes.includes(userId)) {
+  if (userIndex === -1) {
     blog.likes.push(userId);
   } else {
-    blog.likes = blog.likes.filter((id) => id !== userId);
+    blog.likes.splice(userIndex, 1);
   }
   return await blog.save();
 };
