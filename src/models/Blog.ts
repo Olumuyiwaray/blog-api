@@ -1,5 +1,6 @@
 import mongoose, { Document, Schema, model } from 'mongoose';
 import { User } from './User';
+import { redis } from '../config/queue';
 
 interface IComment extends Document {
   user: Schema.Types.ObjectId;
@@ -82,4 +83,16 @@ BlogSchema.post<IBlog>(
 const Comment = model('Comment', commentSchema);
 const Blog = model('Blog', BlogSchema);
 
-export { Blog, IBlog, Comment };
+/**
+ * Watches database for changes to blog coolectionc in order to invalidate caches
+ */
+const setupChangeStream = () => {
+  Blog.watch().on('change', (change) => {
+    console.log('Change detected:', change);
+    if (['insert', 'update', 'delete'].includes(change.operationType)) {
+      redis.del('blogs:all');
+    }
+  });
+};
+
+export { Blog, IBlog, Comment, setupChangeStream };

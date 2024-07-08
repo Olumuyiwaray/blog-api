@@ -1,13 +1,16 @@
 import { Queue } from 'bullmq';
-import { RedisOptions } from 'ioredis';
+import { Redis, RedisOptions } from 'ioredis';
 
 const redisOptions: RedisOptions = {
   host: 'localhost',
   port: 6379,
 };
 
+const redis = new Redis(redisOptions);
+
 const emailQueue = new Queue('email', {
-  connection: redisOptions,
+  connection: redis,
 });
 
-export { emailQueue, redisOptions };
+
+export { emailQueue, redis };

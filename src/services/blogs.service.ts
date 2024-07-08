@@ -1,13 +1,25 @@
 import mongoose from 'mongoose';
 import { NotFoundError } from '../lib/customErrors';
 import { Comment, Blog, IBlog } from '../models/Blog';
+import { getCache, setCache } from '../config/cache';
 
 export const getAllBlogs = async () => {
-  const result = await Blog.find();
-  if (result.length <= 0) {
+  const cacheKey = 'blogs:all';
+
+  const cacheBlogs = await getCache(cacheKey);
+
+  if (cacheBlogs) {
+    return cacheBlogs;
+  }
+
+  const blogs = await Blog.find();
+  if (blogs.length <= 0) {
     throw new NotFoundError('No posts found');
   }
-  return result;
+
+  await setCache(cacheKey, blogs, 3600);
+  
+  return blogs;
 };
 
 export const getSingleBlog = async (blogId: string) => {

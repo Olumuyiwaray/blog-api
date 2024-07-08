@@ -1,7 +1,6 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-// Import libraries
 import express, { Application, Request, Response, NextFunction } from 'express';
 import session from 'express-session';
 import methodOveride from 'method-override';
@@ -12,26 +11,20 @@ import cookieParser from 'cookie-parser';
 import { enviromentConfig } from './config/envConfig';
 import dbConnect from './config/database';
 
+
 // Import in app config middlewares
 import limiter from './config/limiter';
 import sessionOptions from './config/express-session';
 import routes from './routes/routes';
 import errorMiddleWare from './middlewares/errorMiddleware';
 import loggerMiddleware from './middlewares/loggerMiddleware';
+import { setupChangeStream } from './models/Blog';
 
-const app = express();
+const app: Application = express();
 const port = enviromentConfig.port;
 
-// Connect database
-dbConnect()
-  .then(() => {
-    console.log('db connected');
-  })
-  .catch((error) => {
-    console.log(error);
-  });
 
-// Configure third party middlewares
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOveride('_method'));
@@ -40,6 +33,10 @@ app.use(helmet());
 app.use(cors());
 app.use(cookieParser());
 app.use(compression());
+
+
+// Call database model watcher
+setupChangeStream();
 
 // Configure express session
 app.use(session(sessionOptions));
@@ -56,8 +53,16 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
 app.use(errorMiddleWare);
 
-app.listen(port, () => {
-  console.log(`Database connected and listening on port ${port}`);
-});
+// Connect database
+dbConnect()
+  .then(() => {
+    console.log('db connected');
+    app.listen(port, () => {
+      console.log(`Database connected and listening on port ${port}`);
+    });
+  })
+  .catch((error) => {
+    console.log(error);
+  });
 
 export default app;
