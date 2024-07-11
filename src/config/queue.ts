@@ -12,5 +12,10 @@ const emailQueue = new Queue('email', {
   connection: redis,
 });
 
+const closeConnection = () => {
+  redis.quit();
+};
 
-export { emailQueue, redis };
+
+
+export { emailQueue, redis, Redis, closeConnection};

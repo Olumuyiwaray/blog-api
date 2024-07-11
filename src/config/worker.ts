@@ -1,10 +1,8 @@
 import dotenv from 'dotenv';
 dotenv.config({ path: '../../.env' });
 
-console.log(process.env);
-
 import { Worker, Job } from 'bullmq';
-import { redisOptions } from './queue';
+import { redis } from './queue';
 import { sendEmail } from '../utils/email';
 
 const emailWorker = new Worker(
@@ -16,7 +14,7 @@ const emailWorker = new Worker(
     await sendEmail(job.data);
   },
   {
-    connection: redisOptions,
+    connection: redis,
   }
 );
 
@@ -29,4 +27,3 @@ emailWorker.on('failed', (job, err) => {
     `Job ${job ? job.id : undefined} failed with error: ${err.message}`
   );
 });
-

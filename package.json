@@ -7,7 +7,8 @@
     "start:dev": "NODE_ENV=dev nodemon --watch src --ext ts --exec ts-node ./src/app.ts",
     "build": "rm -rf dist/ && tsc",
     "start:prod": "node dist/app.js",
-    "test": "jest",
+    "test": "jest --forceExit",
+    "test:detect": "--detectOpenHandles",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json"
@@ -37,6 +38,7 @@
     "express-validator": "^7.0.1",
     "helmet": "^7.1.0",
     "ioredis": "^5.4.1",
+    "ioredis-mock": "^8.9.0",
     "jsonwebtoken": "^9.0.2",
     "method-override": "^3.0.0",
     "mongoose": "^8.2.1",

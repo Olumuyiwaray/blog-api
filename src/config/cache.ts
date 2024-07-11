@@ -1,7 +1,5 @@
-
 import logger from './logger';
 import { redis } from './queue';
-
 
 export const setCache = async (key: string, value: any, ttl: number) => {
   try {
@@ -31,3 +29,4 @@ export const getCache = async (key: string) => {
     }
   }
 };
+

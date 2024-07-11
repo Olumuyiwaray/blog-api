@@ -1,4 +1,3 @@
-import mongoose from 'mongoose';
 import { NotFoundError } from '../lib/customErrors';
 import { Comment, Blog, IBlog } from '../models/Blog';
 import { getCache, setCache } from '../config/cache';
@@ -18,7 +17,7 @@ export const getAllBlogs = async () => {
   }
 
   await setCache(cacheKey, blogs, 3600);
-  
+
   return blogs;
 };
 

@@ -4,6 +4,7 @@ module.exports = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
+  testTimeout: 30000,
   setupFiles: ['dotenv/config'],
   collectCoverage: true,
   collectCoverageFrom: ['src/**/*.ts'],
