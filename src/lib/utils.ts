@@ -1,4 +1,3 @@
-import { emailQueue } from '../config/queue';
 import crypto from 'crypto';
 
 export const getEnvVariable = (key: string) => {
@@ -7,20 +6,6 @@ export const getEnvVariable = (key: string) => {
   }
 
   return process.env[key] as string;
-};
-
-export const addJobToQueue = (emailData: {
-  to: string;
-  subject: string;
-  body: string;
-}) => {
-  emailQueue.add('sendEmail', emailData, {
-    attempts: 3, // Retry 3 times if the job fails
-    backoff: {
-      type: 'fixed',
-      delay: 10000, // Wait 5 seconds before retrying
-    },
-  });
 };
 
 export const generateToken = () => {

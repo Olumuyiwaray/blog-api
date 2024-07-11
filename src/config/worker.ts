@@ -2,8 +2,8 @@ import dotenv from 'dotenv';
 dotenv.config({ path: '../../.env' });
 
 import { Worker, Job } from 'bullmq';
-import { redis } from './queue';
 import { sendEmail } from '../utils/email';
+import redis from './redis';
 
 const emailWorker = new Worker(
   'email',

@@ -8,11 +8,12 @@ import {
   NotFoundError,
   UnauthorizedError,
 } from '../lib/customErrors';
-import { addJobToQueue, constructEmail, generateToken } from '../lib/utils';
+import { constructEmail, generateToken } from '../lib/utils';
 import { User } from '../models/User';
 import { comparePassword, genSalt, hashPassword } from '../utils/password';
 import jwt from 'jsonwebtoken';
 import { sendEmail } from '../utils/email';
+import addJobToQueue from '../config/queue';
 
 export const registerUser = async (payload: IRegister, req: Request) => {
   const { name, username, email, password, profile_image } = payload;

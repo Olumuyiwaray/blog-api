@@ -48,9 +48,7 @@ describe('Permission test', () => {
 
     await checkPermission(req, res, next);
 
-    expect(Blog.findById).toHaveBeenCalledWith({
-      _id: { $eq: req.params.blogId },
-    });
+    expect(Blog.findById).toHaveBeenCalledWith(req.params.blogId);
     expect(res.status).not.toHaveBeenCalled();
     expect(res.json).not.toHaveBeenCalled();
     expect(next).toHaveBeenCalled();
@@ -70,9 +68,7 @@ describe('Permission test', () => {
 
     await checkPermission(req, res, next);
 
-    expect(Blog.findById).toHaveBeenCalledWith({
-      _id: { $eq: req.params.blogId },
-    });
+    expect(Blog.findById).toHaveBeenCalledWith(req.params.blogId);
     expect(res.status).toHaveBeenCalledWith(404);
     expect(res.json).toHaveBeenCalledWith({ message: 'blog not found' });
     expect(next).not.toHaveBeenCalled();
@@ -100,14 +96,12 @@ describe('Permission test', () => {
     };
 
     (Blog.findById as jest.Mock).mockResolvedValue(mockResult);
-     // Mock the equals method
-     mockResult.author.equals = jest.fn().mockReturnValue(false);
+    // Mock the equals method
+    mockResult.author.equals = jest.fn().mockReturnValue(false);
 
     await checkPermission(req, res, next);
 
-    expect(Blog.findById).toHaveBeenCalledWith({
-      _id: { $eq: req.params.blogId },
-    });
+    expect(Blog.findById).toHaveBeenCalledWith(req.params.blogId);
     expect(res.status).toHaveBeenCalledWith(401);
     expect(res.json).toHaveBeenCalledWith({
       message: 'Unauthorized operation',
@@ -131,9 +125,7 @@ describe('Permission test', () => {
 
     await checkPermission(req, res, next);
 
-    expect(Blog.findById).toHaveBeenCalledWith({
-      _id: { $eq: req.params.blogId },
-    });
+    expect(Blog.findById).toHaveBeenCalledWith(req.params.blogId);
     expect(res.status).not.toHaveBeenCalled();
     expect(res.json).not.toHaveBeenCalled();
     expect(next).toHaveBeenCalledWith(mockError);

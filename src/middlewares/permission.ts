@@ -15,7 +15,7 @@ export const checkPermission = async (
     const blogId = req.params.blogId;
     const authorId = req.user.userId;
 
-    const blog = await Blog.findById({ _id: { $eq: blogId } });
+    const blog = await Blog.findById(blogId);
 
     if (!blog) {
       return res.status(404).json({ message: 'blog not found' });

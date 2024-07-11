@@ -2,16 +2,16 @@ import { getCache, setCache } from '../../../config/cache';
 import { NotFoundError } from '../../../lib/customErrors';
 import { Blog, Comment } from '../../../models/Blog';
 import * as blogService from '../../../services/blogs.service';
-import RedisMock from 'ioredis-mock';
-// import { Redis, redis } from '../../../config/queue';
 
 jest.mock('../../../config/cache', () => ({
   getCache: jest.fn(),
   setCache: jest.fn(),
 }));
 
+jest.mock('../../../models/Blog');
+
 describe('Get all blogs service', () => {
-  beforeEach(() => {
+  afterEach(() => {
     jest.clearAllMocks();
   });
   /**
@@ -22,7 +22,7 @@ afterAll(async () => {
   });
 
   Redis has been keeping 
-  juest from exiting properly, 
+  jest from exiting properly, 
   still working on it.
 
   

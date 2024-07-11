@@ -1,6 +1,6 @@
 import mongoose, { Document, Schema, model } from 'mongoose';
 import { User } from './User';
-import { redis } from '../config/queue';
+import redis from '../config/redis';
 
 interface IComment extends Document {
   user: Schema.Types.ObjectId;

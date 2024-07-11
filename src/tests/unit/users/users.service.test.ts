@@ -14,11 +14,11 @@ import {
   hashPassword,
 } from '../../../utils/password';
 import {
-  addJobToQueue,
   constructEmail,
   generateToken,
   getEnvVariable,
 } from '../../../lib/utils';
+import addJobToQueue from '../../../config/queue';
 
 // Mock external dependencies
 jest.mock('../../../utils/password', () => ({
@@ -27,10 +27,14 @@ jest.mock('../../../utils/password', () => ({
   comparePassword: jest.fn(),
 }));
 
+jest.mock('../../../config/queue', () => ({
+  __esModule: true,
+  default: jest.fn()
+}));
+
 jest.mock('../../../lib/utils', () => ({
   generateToken: jest.fn(),
   constructEmail: jest.fn(),
-  addJobToQueue: jest.fn(),
   getEnvVariable: jest.fn(),
 }));
 
@@ -84,7 +88,7 @@ describe('create a new account service', () => {
     (generateToken as jest.Mock).mockResolvedValue('token');
     (User.create as jest.Mock).mockResolvedValue(mockUser);
     (constructEmail as jest.Mock).mockResolvedValue('message body');
-    // (addJobToQueue as jest.Mock).mockImplementation()
+    // (addJobToQueue as jest.Mock).mockImplementation(() => undefined);
 
     const result = await userService.registerUser(userSignupDetails, req);
 

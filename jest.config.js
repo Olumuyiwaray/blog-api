@@ -6,8 +6,8 @@ module.exports = {
   },
   testTimeout: 30000,
   setupFiles: ['dotenv/config'],
-  collectCoverage: true,
-  collectCoverageFrom: ['src/**/*.ts'],
-  coverageDirectory: 'coverage',
-  coverageReporters: ['json', 'lcov', 'text', 'clover'],
+  // collectCoverage: true,
+  // collectCoverageFrom: ['src/**/*.ts'],
+  // coverageDirectory: 'coverage',
+  // coverageReporters: ['json', 'lcov', 'text', 'clover'],
 };
