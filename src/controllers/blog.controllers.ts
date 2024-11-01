@@ -3,6 +3,16 @@ import { Request, Response, NextFunction } from 'express';
 import services from '../services/blogs.service';
 import { IBlog } from '../models/blog';
 
+/**
+ * GET /blogs
+ * Get all blogs
+ *
+ * Returns all blogs
+ * @param {Request} req - The request object
+ * @param {Response} res - The response object
+ * @param {NextFunction} next - The next function
+ * @return {Promise<void>} - The promise
+ */
 const getAllBlogs = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const result = await services.getAllBlogs();
@@ -20,6 +30,16 @@ const getAllBlogs = async (req: Request, res: Response, next: NextFunction) => {
 
 const getBlogById = async (req: Request, res: Response, next: NextFunction) => {
   const { blogId } = req.params;
+  /**
+   * GET /blogs/:blogId
+   * Get a single blog by id
+   *
+   * Returns a single blog
+   * @param {Request} req - The request object
+   * @param {Response} res - The response object
+   * @param {NextFunction} next - The next function
+   * @return {Promise<void>} - The promise
+   */
   try {
     const result = await services.getBlogById(blogId);
 
@@ -35,6 +55,16 @@ const getBlogById = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+/**
+ * GET /blogs/search
+ * Search for a blog by title or body
+ *
+ * Returns all matching blogs
+ * @param {Request} req - The request object
+ * @param {Response} res - The response object
+ * @param {NextFunction} next - The next function
+ * @return {Promise<void>} - The promise
+ */
 const searchBlogs = async (req: Request, res: Response, next: NextFunction) => {
   const search = req.query.search;
 
@@ -46,6 +76,18 @@ const searchBlogs = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+/**
+ * POST /blogs
+ * Create a new blog
+ *
+ * Creates a new blog post with the provided details in the request body.
+ * If an image is uploaded, its location will be included in the blog data.
+ *
+ * @param {Request} req - The request object containing blog details and user information
+ * @param {Response} res - The response object to send the result of the creation process
+ * @param {NextFunction} next - The next middleware function in the stack
+ * @return {Promise<void>} - The promise indicating the completion of the blog creation
+ */
 const createBlog = async (req: Request, res: Response, next: NextFunction) => {
   const blogDTO: IBlog = { ...req.body };
   if (req.file) {
@@ -67,6 +109,17 @@ const createBlog = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+/**
+ * PUT /blogs/:blogId
+ * Edit an existing blog post
+ *
+ * Updates an existing blog post with the provided details in the request body.
+ *
+ * @param {Request} req - The request object containing the blog details to be updated
+ * @param {Response} res - The response object to send the result of the update process
+ * @param {NextFunction} next - The next middleware function in the stack
+ * @return {Promise<void>} - The promise indicating the completion of the blog update
+ */
 const editBlog = async (req: Request, res: Response, next: NextFunction) => {
   const content = req.body;
 
@@ -109,6 +162,16 @@ const editBlog = async (req: Request, res: Response, next: NextFunction) => {
 //   }
 // };
 
+/**
+ * GET /blogs/:blogId/comments
+ * Get all comments of a blog post
+ *
+ * Returns all comments of the given blog post
+ * @param {Request} req - The request object containing the blog id
+ * @param {Response} res - The response object to send the result of the query process
+ * @param {NextFunction} next - The next middleware function in the stack
+ * @return {Promise<void>} - The promise indicating the completion of the query
+ */
 const getComments = async (req: Request, res: Response, next: NextFunction) => {
   const { blogId } = req.params;
   try {
@@ -126,6 +189,16 @@ const getComments = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+/**
+ * POST /blogs/:blogId/comments
+ * Add a comment to a blog post
+ *
+ * Adds a comment to the given blog post
+ * @param {Request} req - The request object containing the blog id and user information
+ * @param {Response} res - The response object to send the result of the creation process
+ * @param {NextFunction} next - The next middleware function in the stack
+ * @return {Promise<void>} - The promise indicating the completion of the creation process
+ */
 const addComment = async (req: Request, res: Response, next: NextFunction) => {
   const { blogId } = req.params;
   const { userId } = req.user;
@@ -145,6 +218,16 @@ const addComment = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+/**
+ * PATCH /blogs/:blogId/comments/:commentId
+ * Edit an existing comment on a blog post
+ *
+ * Updates an existing comment on a blog post with the given id
+ * @param {Request} req - The request object containing the comment id and updated comment content
+ * @param {Response} res - The response object to send the result of the update process
+ * @param {NextFunction} next - The next middleware function in the stack
+ * @return {Promise<void>} - The promise indicating the completion of the comment update
+ */
 const editComment = async (req: Request, res: Response, next: NextFunction) => {
   const { commentId } = req.params;
   const { content } = req.body;
@@ -163,6 +246,16 @@ const editComment = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+/**
+ * DELETE /blogs/:blogId/comments/:commentId
+ * Delete a comment on a blog post
+ *
+ * Deletes an existing comment on a blog post with the given id
+ * @param {Request} req - The request object containing the comment id
+ * @param {Response} res - The response object to send the result of the deletion process
+ * @param {NextFunction} next - The next middleware function in the stack
+ * @return {Promise<void>} - The promise indicating the completion of the deletion process
+ */
 const deleteComment = async (
   req: Request,
   res: Response,
@@ -184,9 +277,19 @@ const deleteComment = async (
   }
 };
 
+/**
+ * DELETE /blogs/:blogId
+ * Delete an existing blog post
+ *
+ * Deletes an existing blog post with the given blog id.
+ *
+ * @param {Request} req - The request object containing the blog id to be deleted
+ * @param {Response} res - The response object to send the result of the deletion process
+ * @param {NextFunction} next - The next middleware function in the stack
+ * @return {Promise<void>} - The promise indicating the completion of the deletion process
+ */
 const deleteBlog = async (req: Request, res: Response, next: NextFunction) => {
   const { blogId } = req.params;
-
   try {
     const result = await services.deleteBlog(blogId);
 

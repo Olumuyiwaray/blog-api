@@ -13,6 +13,7 @@ const enviromentConfig = {
   nodemailerHost: getEnvVariable('NODE_MAILER_HOST'),
   nodemailerPort: parseInt(getEnvVariable('NODE_MAILER_PORT'), 10),
   nodemailerService: getEnvVariable('NODE_MAILER_SERVICE'),
+  redisUrl: getEnvVariable('REDIS_URL'),
 };
 
 if (process.env.NODE_ENV === 'production') {

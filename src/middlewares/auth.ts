@@ -31,7 +31,7 @@ const authMiddleware = async (
       return res.status(401).json({ message: 'Unauthorized, user not found' });
     }
 
-    if (userObj.status !== true) {
+    if (userObj.status !== 'Active') {
       return res.status(401).json({
         message:
           'Unauthorized, user not account not active please contact Admin',

@@ -12,15 +12,13 @@ export const userToDTO = async (user: IUser): Promise<UserDTO> => {
     username: user.username,
     email: user.email,
     profile_image: user.profile_image,
-    isVerified: user.isVerified,
     posts: posts,
   };
 };
 
 export const postToDTO = async (blog: IBlog): Promise<BlogtDTO> => {
-  const authorDoc = await User.findById(blog.author);
+  const authorDoc = (await User.findById(blog.author))!;
 
-  
   const author = await userToDTO(authorDoc);
   return {
     title: blog.title,

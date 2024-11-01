@@ -19,7 +19,6 @@ export interface UserDTO {
   username: string;
   email: string;
   profile_image?: string;
-  isVerified: boolean;
   posts: BlogtDTO[];
 }
 

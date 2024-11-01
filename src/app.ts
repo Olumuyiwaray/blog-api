@@ -34,7 +34,7 @@ const swaggerOptions = {
       description: 'API for the Blog',
     },
   },
-  apis: ['./src/routes/*.ts'], // Path to the API docs
+  apis: ['**/*.ts'], // Path to the API docs
 };
 
 const swaggerDocs = swaggerJSDoc(swaggerOptions);
@@ -58,11 +58,11 @@ app.use(session(sessionOptions));
 
 app.use(loggerMiddleware);
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
-
-app.use(routes);
+// app.use(routes);
 
 app.use('/api/v1', routes);
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 app.get('/', async (req: Request, res: Response): Promise<Response> => {
   return res.status(200).send({
