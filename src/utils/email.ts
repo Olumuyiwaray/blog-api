@@ -1,4 +1,4 @@
-import { enviromentConfig } from '../config/envConfig';
+import enviromentConfig from '../config/envConfig';
 import transporter from '../config/nodemailer';
 
 export const sendEmail = async (emailData: {

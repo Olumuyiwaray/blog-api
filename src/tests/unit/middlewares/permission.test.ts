@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { Blog } from '../../../models/Blog';
+import { Blog } from '../../../models/blog';
 import { checkPermission } from '../../../middlewares/permission';
 import mongoose from 'mongoose';
 

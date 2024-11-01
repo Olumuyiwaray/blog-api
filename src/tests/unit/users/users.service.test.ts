@@ -4,20 +4,16 @@ import {
   ConflictError,
   NotFoundError,
   UnauthorizedError,
-} from '../../../lib/customErrors';
-import { User } from '../../../models/User';
+} from '../../../utils/customErrors';
+import { User } from '../../../models/user';
 import jwt from 'jsonwebtoken';
-import * as userService from '../../../services/user.service';
+import userService from '../../../services/user.service';
 import {
   comparePassword,
   genSalt,
   hashPassword,
 } from '../../../utils/password';
-import {
-  constructEmail,
-  generateToken,
-  getEnvVariable,
-} from '../../../lib/utils';
+import { generateToken, getEnvVariable } from '../../../lib/utils';
 import addJobToQueue from '../../../config/queue';
 
 // Mock external dependencies
@@ -29,7 +25,7 @@ jest.mock('../../../utils/password', () => ({
 
 jest.mock('../../../config/queue', () => ({
   __esModule: true,
-  default: jest.fn()
+  default: jest.fn(),
 }));
 
 jest.mock('../../../lib/utils', () => ({
@@ -87,7 +83,6 @@ describe('create a new account service', () => {
     (hashPassword as jest.Mock).mockResolvedValue('hashedPassword');
     (generateToken as jest.Mock).mockResolvedValue('token');
     (User.create as jest.Mock).mockResolvedValue(mockUser);
-    (constructEmail as jest.Mock).mockResolvedValue('message body');
     // (addJobToQueue as jest.Mock).mockImplementation(() => undefined);
 
     const result = await userService.registerUser(userSignupDetails, req);
@@ -97,7 +92,6 @@ describe('create a new account service', () => {
     expect(hashPassword).toHaveBeenCalled();
     expect(generateToken).toHaveBeenCalled();
     expect(User.create).toHaveBeenCalled();
-    expect(constructEmail).toHaveBeenCalled();
     expect(typeof result).toBe('string');
   });
 
@@ -133,7 +127,6 @@ describe('create a new account service', () => {
     (hashPassword as jest.Mock).mockResolvedValue('hashedPassword');
     (generateToken as jest.Mock).mockResolvedValue('token');
     (User.create as jest.Mock).mockResolvedValue(mockUser);
-    (constructEmail as jest.Mock).mockResolvedValue('message body');
     // (addJobToQueue as jest.Mock).mockImplementation()
 
     await expect(
@@ -147,7 +140,6 @@ describe('create a new account service', () => {
     expect(hashPassword).not.toHaveBeenCalled();
     expect(generateToken).not.toHaveBeenCalled();
     expect(User.create).not.toHaveBeenCalled();
-    expect(constructEmail).not.toHaveBeenCalled();
   });
 });
 
@@ -179,7 +171,7 @@ describe('verify registered email service', () => {
 
     (User.findOne as jest.Mock).mockResolvedValue(mockUser);
 
-    const result = await userService.verifyUserRegisterationEmail(
+    const result = await userService.verifyRegisterationEmail(
       verificationToken
     );
 
@@ -212,10 +204,10 @@ describe('verify registered email service', () => {
     (User.findOne as jest.Mock).mockResolvedValue(null);
 
     await expect(
-      userService.verifyUserRegisterationEmail(verificationToken)
+      userService.verifyRegisterationEmail(verificationToken)
     ).rejects.toThrow(UnauthorizedError);
     await expect(
-      userService.verifyUserRegisterationEmail(verificationToken)
+      userService.verifyRegisterationEmail(verificationToken)
     ).rejects.toThrow('Invalid token');
     expect(User.findOne).toHaveBeenCalledWith({ verificationToken });
     expect(mockUser.save).not.toHaveBeenCalled();
@@ -349,7 +341,7 @@ describe('get user account details service', () => {
     (User.findById as jest.Mock).mockResolvedValue(mockUser);
 
     const userId = 'validId';
-    const result = await userService.getUserAccount(userId);
+    const result = await userService.getUserById(userId);
 
     expect(User.findById).toHaveBeenCalledWith(userId);
     expect(result).toEqual(mockUser);
@@ -360,10 +352,10 @@ describe('get user account details service', () => {
 
     const userId = 'invalidId';
 
-    await expect(userService.getUserAccount(userId)).rejects.toThrow(
+    await expect(userService.getUserById(userId)).rejects.toThrow(
       NotFoundError
     );
-    await expect(userService.getUserAccount(userId)).rejects.toThrow(
+    await expect(userService.getUserById(userId)).rejects.toThrow(
       'user not found'
     );
     expect(User.findById).toHaveBeenCalledWith(userId);
@@ -398,9 +390,8 @@ describe('send password reset link service', () => {
 
     (User.findOne as jest.Mock).mockResolvedValue(mockUser);
     (generateToken as jest.Mock).mockResolvedValue('token');
-    (constructEmail as jest.Mock).mockResolvedValue('message body');
 
-    const result = await userService.sendPasswordResetLink(email, req);
+    const result = await userService.sendPasswordResetCode(email, req);
 
     expect(User.findOne).toHaveBeenCalledWith({
       email: { $eq: email },
@@ -429,17 +420,15 @@ describe('send password reset link service', () => {
 
     (User.findOne as jest.Mock).mockResolvedValue(null);
     (generateToken as jest.Mock).mockResolvedValue('token');
-    (constructEmail as jest.Mock).mockResolvedValue('message body');
 
-    await expect(userService.sendPasswordResetLink(email, req)).rejects.toThrow(
+    await expect(userService.sendPasswordResetCode(email, req)).rejects.toThrow(
       NotFoundError
     );
-    await expect(userService.sendPasswordResetLink(email, req)).rejects.toThrow(
+    await expect(userService.sendPasswordResetCode(email, req)).rejects.toThrow(
       'User does not exist'
     );
     expect(User.findOne).toHaveBeenCalledWith({ email: { $eq: email } });
     expect(generateToken).not.toHaveBeenCalled();
-    expect(constructEmail).not.toHaveBeenCalled();
     expect(mockUser.save).not.toHaveBeenCalled();
   });
 });
@@ -469,7 +458,7 @@ describe('verify password reset link service', () => {
     const token = 'resetToken';
     (User.findOne as jest.Mock).mockResolvedValue(mockUser);
 
-    const result = await userService.verifyPasswordResetLink(token);
+    const result = await userService.verifyPasswordResetCode(token);
 
     expect(User.findOne).toHaveBeenCalledWith({ resetPasswordToken: token });
     expect(typeof result).toBe('string');
@@ -480,10 +469,10 @@ describe('verify password reset link service', () => {
 
     const token = 'resetToken';
 
-    await expect(userService.verifyPasswordResetLink(token)).rejects.toThrow(
+    await expect(userService.verifyPasswordResetCode(token)).rejects.toThrow(
       UnauthorizedError
     );
-    await expect(userService.verifyPasswordResetLink(token)).rejects.toThrow(
+    await expect(userService.verifyPasswordResetCode(token)).rejects.toThrow(
       'Invalid token'
     );
     expect(User.findOne).toHaveBeenCalledWith({ resetPasswordToken: token });
@@ -521,7 +510,7 @@ describe('reset password service', () => {
     (genSalt as jest.Mock).mockResolvedValue('randomSalt');
     (hashPassword as jest.Mock).mockResolvedValue('hashPassword');
 
-    const result = await userService.resetUserPassword(password, token);
+    const result = await userService.resetPassword(password, token);
 
     expect(User.findOne).toHaveBeenCalledWith({ resetPasswordToken: token });
     expect(comparePassword).toHaveBeenCalled();
@@ -557,12 +546,12 @@ describe('reset password service', () => {
     (genSalt as jest.Mock).mockResolvedValue('randomSalt');
     (hashPassword as jest.Mock).mockResolvedValue('hashPassword');
 
-    await expect(
-      userService.resetUserPassword(password, token)
-    ).rejects.toThrow(UnauthorizedError);
-    await expect(
-      userService.resetUserPassword(password, token)
-    ).rejects.toThrow('Invalid token');
+    await expect(userService.resetPassword(password, token)).rejects.toThrow(
+      UnauthorizedError
+    );
+    await expect(userService.resetPassword(password, token)).rejects.toThrow(
+      'Invalid token'
+    );
     expect(User.findOne).toHaveBeenCalledWith({ resetPasswordToken: token });
     expect(comparePassword).not.toHaveBeenCalled();
     expect(genSalt).not.toHaveBeenCalled();
@@ -596,12 +585,12 @@ describe('reset password service', () => {
     (genSalt as jest.Mock).mockResolvedValue('randomSalt');
     (hashPassword as jest.Mock).mockResolvedValue('hashPassword');
 
-    await expect(
-      userService.resetUserPassword(password, token)
-    ).rejects.toThrow(ConflictError);
-    await expect(
-      userService.resetUserPassword(password, token)
-    ).rejects.toThrow('Cannot use your previous password');
+    await expect(userService.resetPassword(password, token)).rejects.toThrow(
+      ConflictError
+    );
+    await expect(userService.resetPassword(password, token)).rejects.toThrow(
+      'Cannot use your previous password'
+    );
     expect(User.findOne).toHaveBeenCalledWith({ resetPasswordToken: token });
     expect(comparePassword).toHaveBeenCalled();
     expect(genSalt).not.toHaveBeenCalled();
@@ -642,7 +631,7 @@ describe('change username service', () => {
 
     (User.findById as jest.Mock).mockResolvedValue(mockUser);
 
-    const result = await userService.changeUserName(userId, newUsername);
+    const result = await userService.changeUsername(userId, newUsername);
 
     expect(User.findById).toHaveBeenCalledWith(userId);
     expect(mockUser.save).toHaveBeenCalled();
@@ -656,10 +645,10 @@ describe('change username service', () => {
     const newUsername = 'newUsername';
 
     await expect(
-      userService.changeUserName(userId, newUsername)
+      userService.changeUsername(userId, newUsername)
     ).rejects.toThrow(NotFoundError);
     await expect(
-      userService.changeUserName(userId, newUsername)
+      userService.changeUsername(userId, newUsername)
     ).rejects.toThrow('User not found');
     expect(User.findById).toHaveBeenCalledWith(userId);
   });
@@ -696,7 +685,7 @@ describe('change password service', () => {
     (genSalt as jest.Mock).mockResolvedValue('randomSalt');
     (hashPassword as jest.Mock).mockResolvedValue('hashPassword');
 
-    const result = await userService.changePassWord(userId, newPassword);
+    const result = await userService.changePassword(userId, newPassword);
 
     expect(User.findById).toHaveBeenCalledWith(userId);
     expect(comparePassword).toHaveBeenCalled();
@@ -733,10 +722,10 @@ describe('change password service', () => {
     (hashPassword as jest.Mock).mockResolvedValue('hashPassword');
 
     await expect(
-      userService.changePassWord(userId, newPassword)
+      userService.changePassword(userId, newPassword)
     ).rejects.toThrow(NotFoundError);
     await expect(
-      userService.changePassWord(userId, newPassword)
+      userService.changePassword(userId, newPassword)
     ).rejects.toThrow('user not found');
     expect(User.findById).toHaveBeenCalledWith(userId);
     expect(comparePassword).not.toHaveBeenCalled();
@@ -772,10 +761,10 @@ describe('change password service', () => {
     (hashPassword as jest.Mock).mockResolvedValue('hashPassword');
 
     await expect(
-      userService.changePassWord(userId, newPassword)
+      userService.changePassword(userId, newPassword)
     ).rejects.toThrow(ConflictError);
     await expect(
-      userService.changePassWord(userId, newPassword)
+      userService.changePassword(userId, newPassword)
     ).rejects.toThrow('Cannot use your previous password');
     expect(User.findById).toHaveBeenCalledWith(userId);
     expect(comparePassword).toHaveBeenCalled();

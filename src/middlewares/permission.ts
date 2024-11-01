@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { Blog } from '../models/Blog';
+import { Blog } from '../models/blog';
 
 /**
  * 
@@ -21,7 +21,7 @@ export const checkPermission = async (
       return res.status(404).json({ message: 'blog not found' });
     }
 
-    if (!blog.author.equals(authorId)) {
+    if (String(blog.author) !== authorId) {
       return res.status(401).json({ message: 'Unauthorized operation' });
     }
     next();

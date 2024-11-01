@@ -1,67 +1,52 @@
 import { Request, Response, NextFunction } from 'express';
 
-import {
-  addBlogComment,
-  createPost,
-  deleteBlogComment,
-  editBlogComment,
-  getAllBlogs,
-  getBlogComments,
-  getBlogSearch,
-  getSingleBlog,
-  removePost,
-  toggleBlogLike,
-  updatePost,
-} from '../services/blogs.service';
-import { IBlog } from '../models/Blog';
+import services from '../services/blogs.service';
+import { IBlog } from '../models/blog';
 
-export const getBlogs = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const getAllBlogs = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await getAllBlogs();
-    res.status(200).json(result);
+    const result = await services.getAllBlogs();
+
+    const responseObj = {
+      isSuccess: true,
+      message: 'All Blog!',
+      data: result,
+    };
+    res.status(200).json(responseObj);
   } catch (error: any) {
     next(error);
   }
 };
 
-export const getBlog = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const getBlogById = async (req: Request, res: Response, next: NextFunction) => {
   const { blogId } = req.params;
   try {
-    const result = await getSingleBlog(blogId);
+    const result = await services.getBlogById(blogId);
+
+    const responseObj = {
+      isSuccess: true,
+      message: 'Blog Found!',
+      data: result,
+    };
+
     res.status(200).json(result);
   } catch (error: any) {
     next(error);
   }
 };
 
-export const searchBlogs = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const searchBlogs = async (req: Request, res: Response, next: NextFunction) => {
   const search = req.query.search;
 
   try {
-    const result = await getBlogSearch(search);
+    const result = await services.searchBlogs(search);
     res.status(200).json(result);
   } catch (error: any) {
     next(error);
   }
 };
 
-export const createBlog = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const createBlog = async (req: Request, res: Response, next: NextFunction) => {
   const blogDTO: IBlog = { ...req.body };
   if (req.file) {
     blogDTO.image = req.file.location;
@@ -70,97 +55,115 @@ export const createBlog = async (
   const { userId } = req.user;
 
   try {
-    const message = await createPost(blogDTO, userId);
-    res.status(201).json({ message });
+    const result = await services.createBlog(blogDTO, userId);
+
+    const responseObj = {
+      isSuccess: true,
+      message: result,
+    };
+    res.status(201).json(responseObj);
   } catch (error: any) {
     next(error);
   }
 };
 
-export const editBlog = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const editBlog = async (req: Request, res: Response, next: NextFunction) => {
   const content = req.body;
 
   const { blogId } = req.params;
 
   try {
-    const message = await updatePost(content, blogId);
+    const result = await services.editBlog(content, blogId);
 
-    res.status(200).json({ message });
+    const responseObj = {
+      isSuccess: true,
+      message: result,
+    };
+
+    res.status(200).json(responseObj);
   } catch (error) {
     next(error);
   }
 };
 
-export const toggleLike = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const { userId } = req.user;
+// const toggleBlogLike = async (
+//   req: Request,
+//   res: Response,
+//   next: NextFunction
+// ) => {
+//   const { userId } = req.user;
 
+//   const { blogId } = req.params;
+
+//   try {
+//     const result = await services.toggleBlogLike(blogId, userId);
+
+//     const responseObj = {
+//       isSuccess: true,
+//       message: result,
+//     };
+
+//     res.status(200).json({ result });
+//   } catch (error) {
+//     next(error);
+//   }
+// };
+
+const getComments = async (req: Request, res: Response, next: NextFunction) => {
   const { blogId } = req.params;
-
   try {
-    const result = await toggleBlogLike(blogId, userId);
+    const result = await services.getComments(blogId);
 
-    res.status(200).json({ result });
-  } catch (error) {
-    next(error);
-  }
-};
+    const responseObj = {
+      isSuccess: true,
+      message: 'Blog Comments!',
+      data: result,
+    };
 
-export const getComments = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const { blogId } = req.params;
-  try {
-    const result = await getBlogComments(blogId);
-    res.status(200).json({ result });
+    res.status(200).json(responseObj);
   } catch (error: any) {
     next(error);
   }
 };
 
-export const addComment = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const addComment = async (req: Request, res: Response, next: NextFunction) => {
   const { blogId } = req.params;
   const { userId } = req.user;
   const { content } = req.body;
 
   try {
-    const message = await addBlogComment(blogId, userId, content);
-    res.status(201).json({ message });
+    const result = await services.addComment(blogId, userId, content);
+
+    const responseObj = {
+      isSuccess: true,
+      message: result,
+    };
+
+    res.status(201).json(responseObj);
   } catch (error) {
     next(error);
   }
 };
 
-export const editComment = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const editComment = async (req: Request, res: Response, next: NextFunction) => {
   const { commentId } = req.params;
   const { content } = req.body;
 
   try {
-    const message = await editBlogComment(commentId, content);
-    res.status(201).json({ message });
+    const result = await services.editComment(commentId, content);
+
+    const responseObj = {
+      isSuccess: true,
+      message: result,
+    };
+
+    res.status(201).json(responseObj);
   } catch (error) {
     next(error);
   }
 };
 
-export const deleteComment = async (
+const deleteComment = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -168,26 +171,46 @@ export const deleteComment = async (
   const { commentId } = req.params;
 
   try {
-    const message = await deleteBlogComment(commentId);
+    const result = await services.deleteComment(commentId);
 
-    res.status(200).json({ message });
+    const responseObj = {
+      isSuccess: true,
+      message: result,
+    };
+
+    res.status(200).json(responseObj);
   } catch (error) {
     next(error);
   }
 };
 
-export const deletePost = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const deleteBlog = async (req: Request, res: Response, next: NextFunction) => {
   const { blogId } = req.params;
 
   try {
-    const message = await removePost(blogId);
+    const result = await services.deleteBlog(blogId);
 
-    res.status(200).json({ message });
+    const responseObj = {
+      isSuccess: true,
+      message: result,
+    };
+
+    res.status(200).json(responseObj);
   } catch (error) {
     next(error);
   }
+};
+
+export default {
+  getAllBlogs,
+  getBlogById,
+  searchBlogs,
+  // toggleBlogLike,
+  createBlog,
+  editBlog,
+  getComments,
+  addComment,
+  editComment,
+  deleteComment,
+  deleteBlog,
 };

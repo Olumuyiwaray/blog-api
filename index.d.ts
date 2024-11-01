@@ -9,7 +9,7 @@ declare global {
         userId: string;
         username: string;
       };
-      file?: Express.Multer.File & Express.MulterS3.File
+      file?: Express.Multer.File & Express.MulterS3.File;
     }
   }
 }

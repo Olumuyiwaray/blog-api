@@ -1,9 +1,9 @@
 import { getEnvVariable } from '../lib/utils';
 
-export const enviromentConfig = {
+const enviromentConfig = {
   port: parseInt(getEnvVariable('PORT'), 10) || 3000,
   jwtSecret: getEnvVariable('JWT_SECRET'),
-  mongoUri: getEnvVariable('MONGO_URI'),
+  mongoUri: getEnvVariable('MONGO_URI_DEV'),
   sessionSecret: getEnvVariable('SESSION_SECRET'),
   awsAccessKey: getEnvVariable('AWS_ACCESS_KEY'),
   awsSecretKey: getEnvVariable('AWS_SECRET_KEY'),
@@ -14,3 +14,9 @@ export const enviromentConfig = {
   nodemailerPort: parseInt(getEnvVariable('NODE_MAILER_PORT'), 10),
   nodemailerService: getEnvVariable('NODE_MAILER_SERVICE'),
 };
+
+if (process.env.NODE_ENV === 'production') {
+  enviromentConfig.mongoUri = getEnvVariable('MONGO_URI_PRODUCTION');
+}
+
+export default enviromentConfig;

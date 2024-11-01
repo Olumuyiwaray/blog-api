@@ -1,39 +1,35 @@
 import { Router } from 'express';
-import {
-  changePassword,
-  changeUsername,
-  getUSer,
-  logIn,
-  logOut,
-  register,
-  resetPassword,
-  sendResetLink,
-  verifyRegisteredEmail,
-  verifyResetLink,
-} from '../controllers/user.controllers';
+import controllers from '../controllers/user.controllers';
 import { validate, validateLogin, validateSignup } from '../utils/validate';
 import upload from '../config/multer';
 import authMiddleware from '../middlewares/auth';
+import { loginagentcheck } from '../middlewares/loginagentcheck';
 
 const router: Router = Router();
 
-router.get('/account', authMiddleware, getUSer);
-router.get('/logout', logOut);
-router.get('/verify/:token', verifyRegisteredEmail);
-router.get('/reset/:token', verifyResetLink);
+router.get('/account', authMiddleware, controllers.getUserById);
+router.get('/logout', controllers.logOut);
+router.get('/verification/:token', controllers.verifyRegisterationEmail);
+router.get('/reset/:token', controllers.verifyResetCode);
 
-router.post('/forgot-password', sendResetLink);
+router.post('/forgot-password', controllers.sendResetCode);
 router.post(
   '/register',
   upload.single('profile_image'),
   validateSignup,
   validate,
-  register
+  controllers.registerUser
 );
-router.post('/login', validateLogin, validate, logIn);
+router.post(
+  '/login',
+  loginagentcheck,
+  validateLogin,
+  validate,
+  controllers.loginUser
+);
 
-router.put('/change-username', authMiddleware, changeUsername);
-router.put('/change-password', authMiddleware, changePassword);
-router.put('/reset/:token', resetPassword);
+router.put('/change-username', authMiddleware, controllers.changeUsername);
+router.put('/change-password', authMiddleware, controllers.changePassword);
+router.put('/reset/:token', controllers.resetPassword);
 
 export default router;

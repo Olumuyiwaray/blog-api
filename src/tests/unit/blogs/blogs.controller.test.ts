@@ -13,7 +13,7 @@ import {
 } from '../../../controllers/blog.controllers';
 import * as blogService from '../../../services/blogs.service';
 import { Request, Response } from 'express';
-import { NotFoundError } from '../../../lib/customErrors';
+import { NotFoundError } from '../../../utils/customErrors';
 
 jest.mock('../../../services/blogs.service');
 

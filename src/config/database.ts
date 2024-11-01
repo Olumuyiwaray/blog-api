@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import mongoose from 'mongoose';
-import { enviromentConfig } from './envConfig';
+import enviromentConfig from './envConfig';
 
 const dbConnect = async () => {
   try {

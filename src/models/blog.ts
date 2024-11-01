@@ -1,14 +1,7 @@
 import mongoose, { Document, Schema, model } from 'mongoose';
-import { User } from './User';
+import { User } from './user';
 import redis from '../config/redis';
-
-interface IComment extends Document {
-  user: Schema.Types.ObjectId;
-  post: Schema.Types.ObjectId;
-  content: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
+import { IComment } from './comment';
 
 interface IBlog extends Document {
   title: string;
@@ -17,21 +10,8 @@ interface IBlog extends Document {
   image: string;
   likes: Schema.Types.ObjectId[];
   comments: IComment[];
-  author: mongoose.Types.ObjectId;
-  createdAt: Date;
-  updatedAt: Date;
+  author: Schema.Types.ObjectId;
 }
-
-const commentSchema = new Schema<IComment>(
-  {
-    user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-    post: { type: Schema.Types.ObjectId, ref: 'Blog', required: true },
-    content: { type: String, required: true },
-  },
-  {
-    timestamps: true,
-  }
-);
 
 const BlogSchema = new Schema<IBlog>(
   {
@@ -80,7 +60,6 @@ BlogSchema.post<IBlog>(
   }
 );
 
-const Comment = model('Comment', commentSchema);
 const Blog = model('Blog', BlogSchema);
 
 /**
@@ -95,4 +74,4 @@ const setupChangeStream = () => {
   });
 };
 
-export { Blog, IBlog, Comment, setupChangeStream };
+export { Blog, IBlog, setupChangeStream };

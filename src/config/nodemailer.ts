@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer';
-import { enviromentConfig } from './envConfig';
+import enviromentConfig from './envConfig';
 
 const transporter = nodemailer.createTransport({
   host: enviromentConfig.nodemailerHost,

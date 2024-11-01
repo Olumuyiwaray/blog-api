@@ -1,6 +1,6 @@
 import { getCache, setCache } from '../../../config/cache';
-import { NotFoundError } from '../../../lib/customErrors';
-import { Blog, Comment } from '../../../models/Blog';
+import { NotFoundError } from '../../../utils/customErrors';
+import { Blog, Comment } from '../../../models/blog';
 import * as blogService from '../../../services/blogs.service';
 
 jest.mock('../../../config/cache', () => ({

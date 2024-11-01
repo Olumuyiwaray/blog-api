@@ -15,17 +15,23 @@ export const generateToken = () => {
     .slice(0, 20);
 };
 
-export const constructEmail = (
-  message: string,
-  verificationLink: string,
-  label: string
-) => {
-  return `<h3>${message}</h3>
-    <a style="background-color: blue;
-     text-align: center; color: white;
-      text-decoration: none; padding:
-       5px; border: none; border-radius: 3px;"
-        href=${verificationLink}>
-         ${label}
-         </a>`;
+export const generateCode = () => {
+  return (Math.floor(Math.random() * 1000000) + 1000000)
+    .toString()
+    .substring(1);
 };
+
+// export const constructEmail = (
+//   message: string,
+//   verificationLink: string,
+//   label: string
+// ) => {
+//   return `<h3>${message}</h3>
+//     <a style="background-color: blue;
+//      text-align: center; color: white;
+//       text-decoration: none; padding:
+//        5px; border: none; border-radius: 3px;"
+//         href=${verificationLink}>
+//          ${label}
+//          </a>`;
+// };
