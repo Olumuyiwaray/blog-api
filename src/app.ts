@@ -33,6 +33,20 @@ const swaggerOptions = {
       version: '1.0.0',
       description: 'API for the Blog',
     },
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        },
+      },
+    },
+    // security: [
+    //   {
+    //     bearerAuth: [],
+    //   },
+    // ],
   },
   apis: ['**/*.ts'], // Path to the API docs
 };
@@ -58,7 +72,7 @@ app.use(session(sessionOptions));
 
 app.use(loggerMiddleware);
 
-// app.use(routes);
+app.use(routes);
 
 app.use('/api/v1', routes);
 

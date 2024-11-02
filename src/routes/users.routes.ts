@@ -15,7 +15,7 @@ const router: Router = Router();
  *     tags:
  *       - Users
  *     security:
- *       - Bearer: []
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: A single user object
@@ -174,7 +174,7 @@ router.post(
  *     tags:
  *       - Users
  *     security:
- *       - Bearer: []
+ *       - bearerAuth: []
  *     requestBody:
  *       description: New username
  *       required: true
@@ -199,7 +199,7 @@ router.put('/change-username', authMiddleware, controllers.changeUsername);
  *     tags:
  *       - Users
  *     security:
- *       - Bearer: []
+ *       - bearerAuth: []
  *     requestBody:
  *       description: New password
  *       required: true

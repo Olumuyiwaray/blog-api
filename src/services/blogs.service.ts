@@ -4,21 +4,22 @@ import { Comment } from '../models/comment';
 import { getCache, setCache } from '../config/cache';
 
 const getAllBlogs = async () => {
+  console.log('in the blog service');
   const cacheKey = 'blogs:all';
 
   const cacheBlogs = await getCache(cacheKey);
-
+  console.log('here 1');
   if (cacheBlogs) {
     return cacheBlogs;
   }
-
+  console.log('here 2');
   const blogs = await Blog.find();
   if (blogs.length <= 0) {
     throw new NotFoundError('No posts found');
   }
-
+  console.log('here 3');
   await setCache(cacheKey, blogs, 3600);
-
+  console.log('here 4');
   return blogs;
 };
 

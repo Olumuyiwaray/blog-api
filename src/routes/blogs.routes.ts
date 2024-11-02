@@ -109,6 +109,8 @@ blogRouter.get('/comments/:blogId', controllers.getComments);
  *     summary: Create a new blog
  *     tags:
  *       - Blogs
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -157,6 +159,8 @@ blogRouter.post(
  *     summary: Add a comment to a blog
  *     tags:
  *       - Blogs
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: blogId
@@ -190,6 +194,8 @@ blogRouter.post('/comment/:blogId', authMiddleware, controllers.addComment);
  *     summary: Edit an existing blog
  *     tags:
  *       - Blogs
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: blogId
@@ -233,6 +239,8 @@ blogRouter.put(
  *     summary: Edit an existing comment
  *     tags:
  *       - Blogs
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: commentId
@@ -260,43 +268,13 @@ blogRouter.put('/comment/:commentId', authMiddleware, controllers.editComment);
 
 /**
  * @swagger
- * /blogs/delete/{blogId}:
- *   delete:
- *     summary: Delete a comment from a blog
- *     tags:
- *       - Blogs
- *     parameters:
- *       - in: path
- *         name: blogId
- *         required: true
- *         description: The id of the blog from which the comment will be deleted
- *     responses:
- *       200:
- *         description: Comment deleted successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 isSuccess:
- *                   type: boolean
- *                 message:
- *                   type: string
- */
-blogRouter.delete(
-  '/delete/:blogId',
-  authMiddleware,
-  checkPermission,
-  controllers.deleteComment
-);
-
-/**
- * @swagger
  * /blogs/comment/{commentId}:
  *   delete:
  *     summary: Delete an existing comment
  *     tags:
  *       - Blogs
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: commentId
@@ -320,4 +298,39 @@ blogRouter.delete(
   authMiddleware,
   controllers.deleteComment
 );
+
+/**
+ * @swagger
+ * /blogs/delete/{blogId}:
+ *   delete:
+ *     summary: Deletes a blog
+ *     tags:
+ *       - Blogs
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: blogId
+ *         required: true
+ *         description: The id of the blog from which the comment will be deleted
+ *     responses:
+ *       200:
+ *         description: blog deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 isSuccess:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ */
+blogRouter.delete(
+  '/delete/:blogId',
+  authMiddleware,
+  checkPermission,
+  controllers.deleteBlog
+);
+
 export default blogRouter;

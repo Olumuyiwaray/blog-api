@@ -16,7 +16,7 @@ const enviromentConfig = {
   redisUrl: getEnvVariable('REDIS_URL'),
 };
 
-if (process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV !== 'development') {
   enviromentConfig.mongoUri = getEnvVariable('MONGO_URI_PRODUCTION');
 }
 
